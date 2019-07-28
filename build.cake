@@ -1,6 +1,9 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
+#addin "Cake.FileHelpers"
 
+var target = Argument("target", "Build");
 var configuration = Argument("configuration", "Release");
+var address = Argument("Server", "localhost:5000");
 
 Task("Restore-NuGet-Packages")
     .Does(() =>
@@ -8,8 +11,16 @@ Task("Restore-NuGet-Packages")
     NuGetRestore("raju.sln");
 });
 
+Task("Update-Server-Address")
+    .Does(() =>
+{
+    Information("Server Address is - " + address);
+    ReplaceRegexInFiles("raju/ClientForm.cs","(shyaamAddress =.*;)", "shyaamAddress = \"http://" + address + "/\";");
+});
+
 Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
+    .IsDependentOn("Update-Server-Address")
     .Does(() =>
 {
     if(IsRunningOnWindows())
@@ -26,4 +37,4 @@ Task("Build")
     }
 });
 
-RunTarget("Build");
+RunTarget(target);

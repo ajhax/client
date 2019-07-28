@@ -1,8 +1,7 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
 #addin "Cake.FileHelpers"
 
-var target = Argument("target", "Build");
-var configuration = Argument("configuration", "Release");
+var target = Argument("target", "Make-Payload");
 var address = Argument("Server", "localhost:5000");
 
 Task("Restore-NuGet-Packages")
@@ -27,14 +26,23 @@ Task("Build")
     {
       // Use MSBuild
       MSBuild("raju.sln", settings =>
-        settings.SetConfiguration(configuration));
+        settings.SetConfiguration("Release"));
     }
     else
     {
       // Use XBuild
       XBuild("raju.sln", settings =>
-        settings.SetConfiguration(configuration));
+        settings.SetConfiguration("Release"));
     }
+});
+
+Task("Make-Payload")
+    .IsDependentOn("Build")
+    .Does(() =>
+{
+    EnsureDirectoryExists("out");
+    CopyFile("raju/Bin/Release/Security Background Task.exe", "out/payload.exe");
+    Information("Created payload.exe");
 });
 
 RunTarget(target);

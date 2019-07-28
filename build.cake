@@ -41,7 +41,7 @@ Task("Make-Payload")
     .Does(() =>
 {
     EnsureDirectoryExists("out");
-    CopyFile("raju/Bin/Release/Security Background Task.exe", "out/payload.exe");
+    CopyFile("raju/bin/Release/Security Background Task.exe", "out/payload.exe");
     Information("Created payload.exe");
 });
 

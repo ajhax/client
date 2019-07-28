@@ -24,7 +24,7 @@ fi
 
 # Define default arguments.
 SCRIPT="build.cake"
-TARGET="Default"
+TARGET="Make-Payload"
 CONFIGURATION="Release"
 SERVER=
 VERBOSITY="verbose"

